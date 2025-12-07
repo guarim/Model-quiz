@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz Éducatif - Contrôle des Connaissances</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -400,11 +401,26 @@
     </div>
 
     <script>
+        // ========================================
+        // CONFIGURATION EMAILJS
+        // ========================================
+        // Remplacez ces valeurs par vos identifiants EmailJS
+        // Inscrivez-vous sur https://www.emailjs.com/ pour obtenir vos clés
+        var EMAILJS_PUBLIC_KEY = "VOTRE_CLE_PUBLIQUE_ICI";  // Ex: "user_xxxxxxxxxxxxx"
+        var EMAILJS_SERVICE_ID = "VOTRE_SERVICE_ID_ICI";    // Ex: "service_xxxxx"
+        var EMAILJS_TEMPLATE_ID = "VOTRE_TEMPLATE_ID_ICI";  // Ex: "template_xxxxx"
+        // ========================================
+
         var users = [];
         var questions = [];
         var currentUser = null;
         var currentQuestion = 0;
         var userAnswers = {};
+
+        // Initialisation EmailJS
+        if (EMAILJS_PUBLIC_KEY !== "VOTRE_CLE_PUBLIQUE_ICI") {
+            emailjs.init(EMAILJS_PUBLIC_KEY);
+        }
 
         function loadJSON(url, callback) {
             var xhr = new XMLHttpRequest();
@@ -694,40 +710,124 @@
             console.log('=== GÉNÉRATION DU PDF TERMINÉE ===');
             console.log('Élève: ' + currentUser.prenom + ' ' + currentUser.nom);
             console.log('Score: ' + score + '/' + questions.length + ' (' + percentage + '%)');
-            console.log('');
-            console.log('IMPORTANT: L\'envoi d\'email depuis GitHub Pages n\'est pas possible.');
-            console.log('GitHub Pages est un hébergement statique (HTML/CSS/JS uniquement).');
-            console.log('');
-            console.log('Solutions pour l\'envoi d\'email:');
-            console.log('1. Héberger sur un serveur avec PHP (Apache, Nginx)');
-            console.log('2. Utiliser un service d\'email API (EmailJS, SendGrid, Mailgun)');
-            console.log('3. Utiliser un service backend (Node.js, Firebase Functions)');
-            console.log('');
-            console.log('Le PDF a été généré avec succès. Affichage des résultats...');
             
+            // Vérifier si EmailJS est configuré
+            if (EMAILJS_PUBLIC_KEY === "VOTRE_CLE_PUBLIQUE_ICI" || 
+                EMAILJS_SERVICE_ID === "VOTRE_SERVICE_ID_ICI" || 
+                EMAILJS_TEMPLATE_ID === "VOTRE_TEMPLATE_ID_ICI") {
+                
+                console.warn('⚠️ EmailJS n\'est pas configuré. Veuillez renseigner vos clés EmailJS dans le code.');
+                showEmailNotConfigured(pdfBlob);
+                displayResults(score, percentage, details);
+                return;
+            }
+            
+            // Convertir le PDF en base64
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var base64PDF = e.target.result.split(',')[1];
+                
+                // Préparer les détails des réponses
+                var detailsText = '';
+                for (var i = 0; i < details.length; i++) {
+                    var d = details[i];
+                    detailsText += (i + 1) + '. ' + (d.isCorrect ? '✓' : '✗') + ' ' + d.question + '\n';
+                    detailsText += '   Réponse: ' + d.userAnswer + '\n';
+                    if (!d.isCorrect) {
+                        detailsText += '   Correct: ' + d.correctAnswer + '\n';
+                    }
+                    detailsText += '\n';
+                }
+                
+                // Paramètres pour EmailJS
+                var templateParams = {
+                    to_email: 'guarimm@gmail.com',
+                    student_name: currentUser.prenom + ' ' + currentUser.nom,
+                    student_username: currentUser.username,
+                    score: score,
+                    total: questions.length,
+                    percentage: percentage,
+                    date: new Date().toLocaleDateString('fr-FR'),
+                    details: detailsText,
+                    pdf_attachment: base64PDF,
+                    pdf_filename: 'resultats_quiz_' + currentUser.username + '.pdf'
+                };
+                
+                // Envoi de l'email via EmailJS
+                emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, templateParams)
+                    .then(function(response) {
+                        console.log('✅ Email envoyé avec succès!', response.status, response.text);
+                        showLoading(false);
+                        showEmailSuccess();
+                        displayResults(score, percentage, details);
+                    }, function(error) {
+                        console.error('❌ Erreur lors de l\'envoi de l\'email:', error);
+                        showLoading(false);
+                        showEmailError(pdfBlob);
+                        displayResults(score, percentage, details);
+                    });
+            };
+            reader.readAsDataURL(pdfBlob);
+        }
+        
+        function showEmailNotConfigured(pdfBlob) {
             showLoading(false);
-            
             var reader = new FileReader();
             reader.onload = function(e) {
                 var link = document.createElement('a');
                 link.href = e.target.result;
                 link.download = 'resultats_quiz_' + currentUser.username + '.pdf';
                 
-                var downloadDiv = document.createElement('div');
-                downloadDiv.style.cssText = 'background: #e7f3ff; padding: 20px; border-radius: 10px; margin: 20px 0; text-align: center;';
-                downloadDiv.innerHTML = '<p style="margin-bottom: 15px; color: #0066cc; font-weight: 600;">📧 L\'envoi automatique par email n\'est pas disponible sur GitHub Pages</p>' +
-                                       '<p style="margin-bottom: 15px; color: #333;">Vous pouvez télécharger le PDF et l\'envoyer manuellement à guarimm@gmail.com</p>' +
-                                       '<button onclick="this.previousElementSibling.previousElementSibling.nextElementSibling.click()" style="background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">📥 Télécharger le PDF</button>';
+                var notifDiv = document.createElement('div');
+                notifDiv.style.cssText = 'background: #fff3cd; border-left: 4px solid #ffc107; padding: 20px; border-radius: 10px; margin: 20px 0;';
+                notifDiv.innerHTML = '<p style="margin-bottom: 10px; color: #856404; font-weight: 600;">⚠️ EmailJS n\'est pas configuré</p>' +
+                                    '<p style="margin-bottom: 15px; color: #856404; font-size: 0.95em;">Pour activer l\'envoi automatique par email :</p>' +
+                                    '<ol style="margin-bottom: 15px; color: #856404; font-size: 0.9em; padding-left: 20px;">' +
+                                    '<li>Créez un compte gratuit sur <a href="https://www.emailjs.com/" target="_blank" style="color: #667eea;">EmailJS.com</a></li>' +
+                                    '<li>Configurez un service email et un template</li>' +
+                                    '<li>Copiez vos clés dans le code (début du fichier JavaScript)</li>' +
+                                    '</ol>' +
+                                    '<p style="margin-bottom: 15px; color: #856404; font-size: 0.95em;">En attendant, vous pouvez télécharger le PDF :</p>' +
+                                    '<button onclick="this.previousElementSibling.previousElementSibling.nextElementSibling.click()" style="background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">📥 Télécharger le PDF</button>';
                 
-                downloadDiv.insertBefore(link, downloadDiv.lastChild);
+                notifDiv.insertBefore(link, notifDiv.lastChild);
                 link.style.display = 'none';
                 
                 var resultsSection = document.getElementById('resultsSection');
-                resultsSection.insertBefore(downloadDiv, resultsSection.firstChild);
+                resultsSection.insertBefore(notifDiv, resultsSection.firstChild);
             };
             reader.readAsDataURL(pdfBlob);
+        }
+        
+        function showEmailSuccess() {
+            var notifDiv = document.createElement('div');
+            notifDiv.style.cssText = 'background: #d4edda; border-left: 4px solid #28a745; padding: 20px; border-radius: 10px; margin: 20px 0; text-align: center;';
+            notifDiv.innerHTML = '<p style="margin: 0; color: #155724; font-weight: 600;">✅ Email envoyé avec succès à guarimm@gmail.com</p>';
             
-            displayResults(score, percentage, details);
+            var resultsSection = document.getElementById('resultsSection');
+            resultsSection.insertBefore(notifDiv, resultsSection.firstChild);
+        }
+        
+        function showEmailError(pdfBlob) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var link = document.createElement('a');
+                link.href = e.target.result;
+                link.download = 'resultats_quiz_' + currentUser.username + '.pdf';
+                
+                var notifDiv = document.createElement('div');
+                notifDiv.style.cssText = 'background: #f8d7da; border-left: 4px solid #dc3545; padding: 20px; border-radius: 10px; margin: 20px 0;';
+                notifDiv.innerHTML = '<p style="margin-bottom: 10px; color: #721c24; font-weight: 600;">❌ Erreur lors de l\'envoi de l\'email</p>' +
+                                    '<p style="margin-bottom: 15px; color: #721c24; font-size: 0.95em;">L\'email n\'a pas pu être envoyé. Vous pouvez télécharger le PDF et l\'envoyer manuellement à guarimm@gmail.com</p>' +
+                                    '<button onclick="this.previousElementSibling.previousElementSibling.nextElementSibling.click()" style="background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">📥 Télécharger le PDF</button>';
+                
+                notifDiv.insertBefore(link, notifDiv.lastChild);
+                link.style.display = 'none';
+                
+                var resultsSection = document.getElementById('resultsSection');
+                resultsSection.insertBefore(notifDiv, resultsSection.firstChild);
+            };
+            reader.readAsDataURL(pdfBlob);
         }
 
         function displayResults(score, percentage, details) {
