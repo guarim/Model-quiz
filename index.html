@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Éducatif - Contrôle des Connaissances</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2em;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .content {
+            padding: 40px;
+        }
+
+        .login-form {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 600;
+            font-size: 0.95em;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1em;
+            transition: all 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 30px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #c33;
+        }
+
+        .question-container {
+            display: none;
+        }
+
+        .question-container.active {
+            display: block;
+        }
+
+        .question-header {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .question-number {
+            color: #667eea;
+            font-weight: 600;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+        .question-text {
+            font-size: 1.3em;
+            color: #333;
+            font-weight: 600;
+            line-height: 1.5;
+        }
+
+        .question-image {
+            width: 100%;
+            max-height: 300px;
+            object-fit: contain;
+            border-radius: 10px;
+            margin: 20px 0;
+            background: #f8f9fa;
+        }
+
+        .answers {
+            display: grid;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .answer-option {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            padding: 15px 20px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .answer-option:hover {
+            background: #e9ecef;
+            border-color: #667eea;
+        }
+
+        .answer-option.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .answer-option.correct {
+            background: #28a745;
+            color: white;
+            border-color: #28a745;
+        }
+
+        .answer-option.incorrect {
+            background: #dc3545;
+            color: white;
+            border-color: #dc3545;
+        }
+
+        .answer-radio {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            border: 2px solid #667eea;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .answer-option.selected .answer-radio {
+            border-color: white;
+            background: white;
+        }
+
+        .answer-option.selected .answer-radio::after {
+            content: '';
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #667eea;
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+        }
+
+        .btn-success {
+            background: #28a745;
+        }
+
+        .progress-bar {
+            background: #e0e0e0;
+            height: 8px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            height: 100%;
+            transition: width 0.3s;
+        }
+
+        .results {
+            display: none;
+            text-align: center;
+        }
+
+        .results.active {
+            display: block;
+        }
+
+        .score-display {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+        }
+
+        .score-display h2 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .score-display p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .review-section {
+            text-align: left;
+            margin-top: 30px;
+        }
+
+        .review-question {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            .question-text {
+                font-size: 1.1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                <span>📚</span>
+                Contrôle des Connaissances
+            </h1>
+            <p>Plateforme d'évaluation éducative</p>
+        </div>
+
+        <div class="content">
+            <div id="loginSection">
+                <div class="login-form">
+                    <h2 style="margin-bottom: 30px; color: #333; text-align: center;">Connexion Élève</h2>
+                    <div id="errorMessage" class="error hidden"></div>
+                    <form id="loginForm">
+                        <div class="form-group">
+                            <label for="username">Identifiant</label>
+                            <input type="text" id="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Mot de passe</label>
+                            <input type="password" id="password" required>
+                        </div>
+                        <button type="submit" class="btn">Se connecter</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="quizSection" class="hidden">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+
+                <div id="questionsContainer"></div>
+
+                <div class="navigation">
+                    <button id="prevBtn" class="btn btn-secondary" style="width: auto;">← Précédent</button>
+                    <button id="nextBtn" class="btn" style="width: auto;">Suivant →</button>
+                    <button id="submitBtn" class="btn btn-success hidden" style="width: auto;">Terminer le quiz</button>
+                </div>
+            </div>
+
+            <div id="resultsSection" class="results">
+                <div class="score-display">
+                    <h2 id="finalScore"></h2>
+                    <p id="scoreMessage"></p>
+                </div>
+                <div class="review-section" id="reviewSection"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var users = [
+            {"id": 1, "username": "eleve1", "password": "pass123", "nom": "Dupont", "prenom": "Jean"},
+            {"id": 2, "username": "eleve2", "password": "pass456", "nom": "Martin", "prenom": "Marie"}
+        ];
+        
+        var questions = [
+            {
+                "id": 1,
+                "question": "Quelle est la capitale de la France ?",
+                "reponses": [
+                    {"texte": "Paris", "valeur": 1},
+                    {"texte": "Londres", "valeur": 0},
+                    {"texte": "Berlin", "valeur": 0},
+                    {"texte": "Madrid", "valeur": 0}
+                ],
+                "image": "1.png"
+            },
+            {
+                "id": 2,
+                "question": "Combien font 2 + 2 ?",
+                "reponses": [
+                    {"texte": "3", "valeur": 0},
+                    {"texte": "4", "valeur": 1},
+                    {"texte": "5", "valeur": 0},
+                    {"texte": "6", "valeur": 0}
+                ],
+                "image": "2.png"
+            }
+        ];
+        
+        var currentUser = null;
+        var currentQuestion = 0;
+        var userAnswers = {};
+
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            var username = document.getElementById('username').value;
+            var password = document.getElementById('password').value;
+
+            var user = users.find(function(u) {
+                return u.username === username && u.password === password;
+            });
+            
+            if (user) {
+                currentUser = user;
+                document.getElementById('loginSection').classList.add('hidden');
+                document.getElementById('quizSection').classList.remove('hidden');
+                loadQuestions();
+            } else {
+                showError('Identifiant ou mot de passe incorrect');
+            }
+        });
+
+        function showError(message) {
+            var errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+        }
+
+        function loadQuestions() {
+            var container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+
+            questions.forEach(function(q, index) {
+                var questionDiv = document.createElement('div');
+                questionDiv.className = 'question-container';
+                if (index === 0) questionDiv.classList.add('active');
+
+                var answersHtml = q.reponses.map(function(rep, repIndex) {
+                    return '<div class="answer-option" onclick="selectAnswer(' + q.id + ', ' + repIndex + ')">' +
+                           '<div class="answer-radio"></div>' +
+                           '<span>' + rep.texte + '</span>' +
+                           '</div>';
+                }).join('');
+
+                var imageHtml = q.image ? '<img src="' + q.image + '" alt="Image question ' + (index + 1) + '" class="question-image" onerror="this.style.display=\'none\'">' : '';
+
+                questionDiv.innerHTML = 
+                    '<div class="question-header">' +
+                    '<div class="question-number">Question ' + (index + 1) + ' sur ' + questions.length + '</div>' +
+                    '<div class="question-text">' + q.question + '</div>' +
+                    '</div>' +
+                    imageHtml +
+                    '<div class="answers" id="answers-' + q.id + '">' +
+                    answersHtml +
+                    '</div>';
+
+                container.appendChild(questionDiv);
+            });
+
+            updateProgress();
+            updateNavigation();
+        }
+
+        function selectAnswer(questionId, answerIndex) {
+            userAnswers[questionId] = answerIndex;
+            
+            var answersDiv = document.getElementById('answers-' + questionId);
+            var options = answersDiv.querySelectorAll('.answer-option');
+            
+            options.forEach(function(opt, idx) {
+                if (idx === answerIndex) {
+                    opt.classList.add('selected');
+                } else {
+                    opt.classList.remove('selected');
+                }
+            });
+        }
+
+        document.getElementById('prevBtn').addEventListener('click', function() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion(currentQuestion);
+            }
+        });
+
+        document.getElementById('nextBtn').addEventListener('click', function() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                showQuestion(currentQuestion);
+            }
+        });
+
+        document.getElementById('submitBtn').addEventListener('click', submitQuiz);
+
+        function showQuestion(index) {
+            var allQuestions = document.querySelectorAll('.question-container');
+            allQuestions.forEach(function(q, i) {
+                if (i === index) {
+                    q.classList.add('active');
+                } else {
+                    q.classList.remove('active');
+                }
+            });
+            updateProgress();
+            updateNavigation();
+        }
+
+        function updateProgress() {
+            var progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function updateNavigation() {
+            var prevBtn = document.getElementById('prevBtn');
+            var nextBtn = document.getElementById('nextBtn');
+            var submitBtn = document.getElementById('submitBtn');
+
+            prevBtn.style.display = currentQuestion === 0 ? 'none' : 'block';
+            
+            if (currentQuestion === questions.length - 1) {
+                nextBtn.classList.add('hidden');
+                submitBtn.classList.remove('hidden');
+            } else {
+                nextBtn.classList.remove('hidden');
+                submitBtn.classList.add('hidden');
+            }
+        }
+
+        function submitQuiz() {
+            var score = 0;
+            questions.forEach(function(q) {
+                var userAnswer = userAnswers[q.id];
+                if (userAnswer !== undefined && q.reponses[userAnswer].valeur === 1) {
+                    score++;
+                }
+            });
+
+            var percentage = (score / questions.length * 100).toFixed(1);
+
+            sendResultsByEmail(score, percentage);
+            displayResults(score, percentage);
+        }
+
+        function sendResultsByEmail(score, percentage) {
+            console.log('Envoi des résultats par email à guarimm@gmail.com');
+            console.log('Élève: ' + currentUser.prenom + ' ' + currentUser.nom);
+            console.log('Score: ' + score + '/' + questions.length + ' (' + percentage + '%)');
+        }
+
+        function displayResults(score, percentage) {
+            document.getElementById('quizSection').classList.add('hidden');
+            document.getElementById('resultsSection').classList.add('active');
+
+            document.getElementById('finalScore').textContent = score + '/' + questions.length;
+            document.getElementById('scoreMessage').textContent = 'Note: ' + percentage + '% - ' + getScoreMessage(percentage);
+
+            var reviewSection = document.getElementById('reviewSection');
+            reviewSection.innerHTML = '<h3 style="margin-bottom: 20px; color: #333;">Révision des réponses</h3>';
+
+            questions.forEach(function(q) {
+                var userAnswer = userAnswers[q.id];
+                var isCorrect = userAnswer !== undefined && q.reponses[userAnswer].valeur === 1;
+
+                var reviewDiv = document.createElement('div');
+                reviewDiv.className = 'review-question';
+                
+                var answersHtml = q.reponses.map(function(rep, repIndex) {
+                    var className = 'answer-option';
+                    if (rep.valeur === 1) className += ' correct';
+                    else if (userAnswer === repIndex) className += ' incorrect';
+                    
+                    return '<div class="' + className + '">' +
+                           '<div class="answer-radio"></div>' +
+                           '<span>' + rep.texte + '</span>' +
+                           '</div>';
+                }).join('');
+
+                reviewDiv.innerHTML = 
+                    '<div style="font-weight: 600; margin-bottom: 10px; color: #333;">' + q.question + '</div>' +
+                    '<div class="answers">' + answersHtml + '</div>';
+                
+                reviewSection.appendChild(reviewDiv);
+            });
+        }
+
+        function getScoreMessage(percentage) {
+            if (percentage >= 90) return 'Excellent travail !';
+            if (percentage >= 75) return 'Très bien !';
+            if (percentage >= 60) return 'Bien, continuez vos efforts';
+            if (percentage >= 50) return 'Passable, il faut réviser';
+            return 'Insuffisant, révisez le cours';
+        }
+    </script>
+</body>
+</html>
