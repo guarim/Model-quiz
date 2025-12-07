@@ -158,19 +158,36 @@
             line-height: 1.5;
         }
 
+        .question-content {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .question-image-container {
+            flex: 2;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            min-height: 400px;
+        }
+
         .question-image {
-            width: 100%;
-            max-height: 300px;
+            max-width: 100%;
+            max-height: 500px;
             object-fit: contain;
             border-radius: 10px;
-            margin: 20px 0;
-            background: #f8f9fa;
         }
 
         .answers {
-            display: grid;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
             gap: 15px;
-            margin-bottom: 30px;
+            justify-content: center;
         }
 
         .answer-option {
@@ -316,6 +333,14 @@
 
             .question-text {
                 font-size: 1.1em;
+            }
+
+            .question-content {
+                flex-direction: column;
+            }
+
+            .question-image-container {
+                min-height: 250px;
             }
         }
     </style>
@@ -481,17 +506,29 @@
                            '</div>';
                 }
 
-                var imageHtml = q.image ? '<img src="' + q.image + '" alt="Image question" class="question-image" onerror="this.style.display=\'none\'">' : '';
+                var imageHtml = '';
+                if (q.image) {
+                    imageHtml = '<div class="question-image-container">' +
+                               '<img src="' + q.image + '" alt="Image question" class="question-image" onerror="this.parentElement.style.display=\'none\'">' +
+                               '</div>';
+                }
+
+                var contentHtml = '';
+                if (q.image) {
+                    contentHtml = '<div class="question-content">' +
+                                 imageHtml +
+                                 '<div class="answers" id="answers-' + q.id + '">' + answersHtml + '</div>' +
+                                 '</div>';
+                } else {
+                    contentHtml = '<div class="answers" id="answers-' + q.id + '" style="max-width: 600px; margin: 0 auto;">' + answersHtml + '</div>';
+                }
 
                 questionDiv.innerHTML = 
                     '<div class="question-header">' +
                     '<div class="question-number">Question ' + (i + 1) + ' sur ' + questions.length + '</div>' +
                     '<div class="question-text">' + q.question + '</div>' +
                     '</div>' +
-                    imageHtml +
-                    '<div class="answers" id="answers-' + q.id + '">' +
-                    answersHtml +
-                    '</div>';
+                    contentHtml;
 
                 container.appendChild(questionDiv);
             }
@@ -654,35 +691,43 @@
         }
 
         function sendEmailWithPDF(pdfBlob, score, percentage, details) {
-            var formData = new FormData();
-            formData.append('pdf', pdfBlob, 'resultats_quiz_' + currentUser.username + '.pdf');
-            formData.append('studentName', currentUser.prenom + ' ' + currentUser.nom);
-            formData.append('username', currentUser.username);
-            formData.append('score', score);
-            formData.append('total', questions.length);
-            formData.append('percentage', percentage);
-            formData.append('email', 'guarimm@gmail.com');
+            console.log('=== GÉNÉRATION DU PDF TERMINÉE ===');
+            console.log('Élève: ' + currentUser.prenom + ' ' + currentUser.nom);
+            console.log('Score: ' + score + '/' + questions.length + ' (' + percentage + '%)');
+            console.log('');
+            console.log('IMPORTANT: L\'envoi d\'email depuis GitHub Pages n\'est pas possible.');
+            console.log('GitHub Pages est un hébergement statique (HTML/CSS/JS uniquement).');
+            console.log('');
+            console.log('Solutions pour l\'envoi d\'email:');
+            console.log('1. Héberger sur un serveur avec PHP (Apache, Nginx)');
+            console.log('2. Utiliser un service d\'email API (EmailJS, SendGrid, Mailgun)');
+            console.log('3. Utiliser un service backend (Node.js, Firebase Functions)');
+            console.log('');
+            console.log('Le PDF a été généré avec succès. Affichage des résultats...');
             
-            var xhr = new XMLHttpRequest();
-            xhr.open('POST', 'send_email.php', true);
+            showLoading(false);
             
-            xhr.onload = function() {
-                showLoading(false);
-                if (xhr.status === 200) {
-                    displayResults(score, percentage, details);
-                } else {
-                    alert('Erreur lors de l\'envoi de l\'email. Affichage des résultats...');
-                    displayResults(score, percentage, details);
-                }
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var link = document.createElement('a');
+                link.href = e.target.result;
+                link.download = 'resultats_quiz_' + currentUser.username + '.pdf';
+                
+                var downloadDiv = document.createElement('div');
+                downloadDiv.style.cssText = 'background: #e7f3ff; padding: 20px; border-radius: 10px; margin: 20px 0; text-align: center;';
+                downloadDiv.innerHTML = '<p style="margin-bottom: 15px; color: #0066cc; font-weight: 600;">📧 L\'envoi automatique par email n\'est pas disponible sur GitHub Pages</p>' +
+                                       '<p style="margin-bottom: 15px; color: #333;">Vous pouvez télécharger le PDF et l\'envoyer manuellement à guarimm@gmail.com</p>' +
+                                       '<button onclick="this.previousElementSibling.previousElementSibling.nextElementSibling.click()" style="background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600;">📥 Télécharger le PDF</button>';
+                
+                downloadDiv.insertBefore(link, downloadDiv.lastChild);
+                link.style.display = 'none';
+                
+                var resultsSection = document.getElementById('resultsSection');
+                resultsSection.insertBefore(downloadDiv, resultsSection.firstChild);
             };
+            reader.readAsDataURL(pdfBlob);
             
-            xhr.onerror = function() {
-                showLoading(false);
-                alert('Erreur réseau. Veuillez vérifier que send_email.php est présent sur le serveur.');
-                displayResults(score, percentage, details);
-            };
-            
-            xhr.send(formData);
+            displayResults(score, percentage, details);
         }
 
         function displayResults(score, percentage, details) {
