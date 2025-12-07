@@ -1,0 +1,222 @@
+[
+  {
+    "id": 1,
+    "question": "Quelle est la capitale de la France ?",
+    "reponses": [
+      {"texte": "Paris", "valeur": 1},
+      {"texte": "Lyon", "valeur": 0},
+      {"texte": "Marseille", "valeur": 0},
+      {"texte": "Bordeaux", "valeur": 0}
+    ],
+    "image": "1.png"
+  },
+  {
+    "id": 2,
+    "question": "Quel fleuve traverse Paris ?",
+    "reponses": [
+      {"texte": "La Loire", "valeur": 0},
+      {"texte": "La Seine", "valeur": 1},
+      {"texte": "Le Rhône", "valeur": 0},
+      {"texte": "La Garonne", "valeur": 0}
+    ],
+    "image": "2.png"
+  },
+  {
+    "id": 3,
+    "question": "Quelle est la plus haute montagne de France ?",
+    "reponses": [
+      {"texte": "Le Mont Ventoux", "valeur": 0},
+      {"texte": "Le Puy de Dôme", "valeur": 0},
+      {"texte": "Le Mont Blanc", "valeur": 1},
+      {"texte": "Le Pic du Midi", "valeur": 0}
+    ],
+    "image": "3.png"
+  },
+  {
+    "id": 4,
+    "question": "Dans quelle région se trouve Strasbourg ?",
+    "reponses": [
+      {"texte": "Normandie", "valeur": 0},
+      {"texte": "Grand Est", "valeur": 1},
+      {"texte": "Bretagne", "valeur": 0},
+      {"texte": "Occitanie", "valeur": 0}
+    ],
+    "image": "4.png"
+  },
+  {
+    "id": 5,
+    "question": "Quelle ville est surnommée la 'Cité phocéenne' ?",
+    "reponses": [
+      {"texte": "Nice", "valeur": 0},
+      {"texte": "Toulouse", "valeur": 0},
+      {"texte": "Marseille", "valeur": 1},
+      {"texte": "Montpellier", "valeur": 0}
+    ],
+    "image": "5.png"
+  },
+  {
+    "id": 6,
+    "question": "Combien la France compte-t-elle de régions métropolitaines ?",
+    "reponses": [
+      {"texte": "10", "valeur": 0},
+      {"texte": "13", "valeur": 1},
+      {"texte": "15", "valeur": 0},
+      {"texte": "18", "valeur": 0}
+    ],
+    "image": "6.png"
+  },
+  {
+    "id": 7,
+    "question": "Quel océan borde la côte ouest de la France ?",
+    "reponses": [
+      {"texte": "Océan Indien", "valeur": 0},
+      {"texte": "Océan Atlantique", "valeur": 1},
+      {"texte": "Océan Pacifique", "valeur": 0},
+      {"texte": "Océan Arctique", "valeur": 0}
+    ],
+    "image": "7.png"
+  },
+  {
+    "id": 8,
+    "question": "Quelle est la deuxième plus grande ville de France ?",
+    "reponses": [
+      {"texte": "Lyon", "valeur": 1},
+      {"texte": "Lille", "valeur": 0},
+      {"texte": "Toulouse", "valeur": 0},
+      {"texte": "Nice", "valeur": 0}
+    ],
+    "image": "8.png"
+  },
+  {
+    "id": 9,
+    "question": "Dans quelle chaîne de montagnes se trouve le Pic du Midi ?",
+    "reponses": [
+      {"texte": "Les Alpes", "valeur": 0},
+      {"texte": "Les Vosges", "valeur": 0},
+      {"texte": "Les Pyrénées", "valeur": 1},
+      {"texte": "Le Jura", "valeur": 0}
+    ],
+    "image": "9.png"
+  },
+  {
+    "id": 10,
+    "question": "Quelle mer borde le sud-est de la France ?",
+    "reponses": [
+      {"texte": "Mer du Nord", "valeur": 0},
+      {"texte": "Mer Méditerranée", "valeur": 1},
+      {"texte": "Mer Baltique", "valeur": 0},
+      {"texte": "Mer Noire", "valeur": 0}
+    ],
+    "image": "10.png"
+  },
+  {
+    "id": 11,
+    "question": "Quelle ville française est célèbre pour son festival de cinéma ?",
+    "reponses": [
+      {"texte": "Paris", "valeur": 0},
+      {"texte": "Cannes", "valeur": 1},
+      {"texte": "Lyon", "valeur": 0},
+      {"texte": "Bordeaux", "valeur": 0}
+    ],
+    "image": "11.png"
+  },
+  {
+    "id": 12,
+    "question": "Quel est le plus long fleuve de France ?",
+    "reponses": [
+      {"texte": "La Seine", "valeur": 0},
+      {"texte": "Le Rhône", "valeur": 0},
+      {"texte": "La Loire", "valeur": 1},
+      {"texte": "La Garonne", "valeur": 0}
+    ],
+    "image": "12.png"
+  },
+  {
+    "id": 13,
+    "question": "Dans quelle région se trouve le Mont-Saint-Michel ?",
+    "reponses": [
+      {"texte": "Bretagne", "valeur": 0},
+      {"texte": "Normandie", "valeur": 1},
+      {"texte": "Pays de la Loire", "valeur": 0},
+      {"texte": "Nouvelle-Aquitaine", "valeur": 0}
+    ],
+    "image": "13.png"
+  },
+  {
+    "id": 14,
+    "question": "Quelle ville est connue pour ses vins et sa région viticole ?",
+    "reponses": [
+      {"texte": "Lille", "valeur": 0},
+      {"texte": "Nantes", "valeur": 0},
+      {"texte": "Bordeaux", "valeur": 1},
+      {"texte": "Strasbourg", "valeur": 0}
+    ],
+    "image": "14.png"
+  },
+  {
+    "id": 15,
+    "question": "Combien de pays ont une frontière avec la France métropolitaine ?",
+    "reponses": [
+      {"texte": "6", "valeur": 0},
+      {"texte": "8", "valeur": 1},
+      {"texte": "10", "valeur": 0},
+      {"texte": "5", "valeur": 0}
+    ],
+    "image": "15.png"
+  },
+  {
+    "id": 16,
+    "question": "Quelle île française se trouve en Méditerranée ?",
+    "reponses": [
+      {"texte": "La Réunion", "valeur": 0},
+      {"texte": "La Martinique", "valeur": 0},
+      {"texte": "La Corse", "valeur": 1},
+      {"texte": "La Guadeloupe", "valeur": 0}
+    ],
+    "image": "16.png"
+  },
+  {
+    "id": 17,
+    "question": "Quelle ville est surnommée la 'Ville rose' ?",
+    "reponses": [
+      {"texte": "Lyon", "valeur": 0},
+      {"texte": "Marseille", "valeur": 0},
+      {"texte": "Toulouse", "valeur": 1},
+      {"texte": "Nice", "valeur": 0}
+    ],
+    "image": "17.png"
+  },
+  {
+    "id": 18,
+    "question": "Dans quelle région se trouve la ville de Rennes ?",
+    "reponses": [
+      {"texte": "Normandie", "valeur": 0},
+      {"texte": "Bretagne", "valeur": 1},
+      {"texte": "Pays de la Loire", "valeur": 0},
+      {"texte": "Centre-Val de Loire", "valeur": 0}
+    ],
+    "image": "18.png"
+  },
+  {
+    "id": 19,
+    "question": "Quel département français a le numéro 75 ?",
+    "reponses": [
+      {"texte": "Lyon", "valeur": 0},
+      {"texte": "Paris", "valeur": 1},
+      {"texte": "Marseille", "valeur": 0},
+      {"texte": "Lille", "valeur": 0}
+    ],
+    "image": "19.png"
+  },
+  {
+    "id": 20,
+    "question": "Quelle région française est connue pour le camembert ?",
+    "reponses": [
+      {"texte": "Bretagne", "valeur": 0},
+      {"texte": "Normandie", "valeur": 1},
+      {"texte": "Bourgogne", "valeur": 0},
+      {"texte": "Provence", "valeur": 0}
+    ],
+    "image": "20.png"
+  }
+]
