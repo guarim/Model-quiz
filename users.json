@@ -1,0 +1,142 @@
+[
+  {
+    "id": 1,
+    "username": "alice.martin",
+    "password": "pass2024",
+    "nom": "Martin",
+    "prenom": "Alice"
+  },
+  {
+    "id": 2,
+    "username": "thomas.bernard",
+    "password": "pass2024",
+    "nom": "Bernard",
+    "prenom": "Thomas"
+  },
+  {
+    "id": 3,
+    "username": "emma.dubois",
+    "password": "pass2024",
+    "nom": "Dubois",
+    "prenom": "Emma"
+  },
+  {
+    "id": 4,
+    "username": "lucas.petit",
+    "password": "pass2024",
+    "nom": "Petit",
+    "prenom": "Lucas"
+  },
+  {
+    "id": 5,
+    "username": "lea.robert",
+    "password": "pass2024",
+    "nom": "Robert",
+    "prenom": "Léa"
+  },
+  {
+    "id": 6,
+    "username": "hugo.richard",
+    "password": "pass2024",
+    "nom": "Richard",
+    "prenom": "Hugo"
+  },
+  {
+    "id": 7,
+    "username": "chloe.durand",
+    "password": "pass2024",
+    "nom": "Durand",
+    "prenom": "Chloé"
+  },
+  {
+    "id": 8,
+    "username": "nathan.moreau",
+    "password": "pass2024",
+    "nom": "Moreau",
+    "prenom": "Nathan"
+  },
+  {
+    "id": 9,
+    "username": "manon.simon",
+    "password": "pass2024",
+    "nom": "Simon",
+    "prenom": "Manon"
+  },
+  {
+    "id": 10,
+    "username": "arthur.laurent",
+    "password": "pass2024",
+    "nom": "Laurent",
+    "prenom": "Arthur"
+  },
+  {
+    "id": 11,
+    "username": "julie.lefebvre",
+    "password": "pass2024",
+    "nom": "Lefebvre",
+    "prenom": "Julie"
+  },
+  {
+    "id": 12,
+    "username": "maxime.roux",
+    "password": "pass2024",
+    "nom": "Roux",
+    "prenom": "Maxime"
+  },
+  {
+    "id": 13,
+    "username": "sarah.fournier",
+    "password": "pass2024",
+    "nom": "Fournier",
+    "prenom": "Sarah"
+  },
+  {
+    "id": 14,
+    "username": "antoine.girard",
+    "password": "pass2024",
+    "nom": "Girard",
+    "prenom": "Antoine"
+  },
+  {
+    "id": 15,
+    "username": "camille.bonnet",
+    "password": "pass2024",
+    "nom": "Bonnet",
+    "prenom": "Camille"
+  },
+  {
+    "id": 16,
+    "username": "pierre.dupont",
+    "password": "pass2024",
+    "nom": "Dupont",
+    "prenom": "Pierre"
+  },
+  {
+    "id": 17,
+    "username": "marie.lambert",
+    "password": "pass2024",
+    "nom": "Lambert",
+    "prenom": "Marie"
+  },
+  {
+    "id": 18,
+    "username": "theo.fontaine",
+    "password": "pass2024",
+    "nom": "Fontaine",
+    "prenom": "Théo"
+  },
+  {
+    "id": 19,
+    "username": "clara.rousseau",
+    "password": "pass2024",
+    "nom": "Rousseau",
+    "prenom": "Clara"
+  },
+  {
+    "id": 20,
+    "username": "paul.vincent",
+    "password": "pass2024",
+    "nom": "Vincent",
+    "prenom": "Paul"
+  }
+]
