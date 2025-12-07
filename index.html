@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Quiz Éducatif - Contrôle des Connaissances</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         * {
             margin: 0;
@@ -116,6 +117,16 @@
             border-radius: 8px;
             margin-bottom: 20px;
             border-left: 4px solid #c33;
+        }
+
+        .loading {
+            background: #e7f3ff;
+            color: #0066cc;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid #0066cc;
+            text-align: center;
         }
 
         .question-container {
@@ -314,9 +325,9 @@
         <div class="header">
             <h1>
                 <span>📚</span>
-                Contrôle des Connaissances en Technologie
+                Contrôle des Connaissances
             </h1>
-            <p>Plateforme d'évaluation éducative de M Guarim</p>
+            <p>Plateforme d'évaluation éducative</p>
         </div>
 
         <div class="content">
@@ -324,6 +335,7 @@
                 <div class="login-form">
                     <h2 style="margin-bottom: 30px; color: #333; text-align: center;">Connexion Élève</h2>
                     <div id="errorMessage" class="error hidden"></div>
+                    <div id="loadingMessage" class="loading hidden">Chargement des données...</div>
                     <form id="loginForm">
                         <div class="form-group">
                             <label for="username">Identifiant</label>
@@ -346,9 +358,9 @@
                 <div id="questionsContainer"></div>
 
                 <div class="navigation">
-                    <button id="prevBtn" class="btn btn-secondary" style="width: auto;">← Précédent</button>
-                    <button id="nextBtn" class="btn" style="width: auto;">Suivant →</button>
-                    <button id="submitBtn" class="btn btn-success hidden" style="width: auto;">Terminer le quiz</button>
+                    <button id="prevBtn" class="btn btn-secondary" style="width: auto;">Précédent</button>
+                    <button id="nextBtn" class="btn" style="width: auto;">Suivant</button>
+                    <button id="submitBtn" class="btn btn-success hidden" style="width: auto;">Terminer</button>
                 </div>
             </div>
 
@@ -363,48 +375,77 @@
     </div>
 
     <script>
-        var users = [
-            {"id": 1, "username": "eleve1", "password": "pass123", "nom": "Dupont", "prenom": "Jean"},
-            {"id": 2, "username": "eleve2", "password": "pass456", "nom": "Martin", "prenom": "Marie"}
-        ];
-        
-        var questions = [
-            {
-                "id": 1,
-                "question": "Quelle est la capitale de la France ?",
-                "reponses": [
-                    {"texte": "Paris", "valeur": 1},
-                    {"texte": "Londres", "valeur": 0},
-                    {"texte": "Berlin", "valeur": 0},
-                    {"texte": "Madrid", "valeur": 0}
-                ],
-                "image": "1.png"
-            },
-            {
-                "id": 2,
-                "question": "Combien font 2 + 2 ?",
-                "reponses": [
-                    {"texte": "3", "valeur": 0},
-                    {"texte": "4", "valeur": 1},
-                    {"texte": "5", "valeur": 0},
-                    {"texte": "6", "valeur": 0}
-                ],
-                "image": "2.png"
-            }
-        ];
-        
+        var users = [];
+        var questions = [];
         var currentUser = null;
         var currentQuestion = 0;
         var userAnswers = {};
+
+        function loadJSON(url, callback) {
+            var xhr = new XMLHttpRequest();
+            xhr.overrideMimeType("application/json");
+            xhr.open('GET', url, true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200) {
+                        callback(null, JSON.parse(xhr.responseText));
+                    } else {
+                        callback('Erreur de chargement: ' + url, null);
+                    }
+                }
+            };
+            xhr.send(null);
+        }
+
+        function showLoading(show) {
+            var loadingDiv = document.getElementById('loadingMessage');
+            if (show) {
+                loadingDiv.classList.remove('hidden');
+            } else {
+                loadingDiv.classList.add('hidden');
+            }
+        }
+
+        function initializeApp() {
+            showLoading(true);
+            
+            loadJSON('users.json', function(err, data) {
+                if (err) {
+                    showError('Erreur: Impossible de charger users.json');
+                    showLoading(false);
+                    return;
+                }
+                users = data;
+                
+                loadJSON('questions.json', function(err2, data2) {
+                    if (err2) {
+                        showError('Erreur: Impossible de charger questions.json');
+                        showLoading(false);
+                        return;
+                    }
+                    questions = data2;
+                    showLoading(false);
+                });
+            });
+        }
 
         document.getElementById('loginForm').addEventListener('submit', function(e) {
             e.preventDefault();
             var username = document.getElementById('username').value;
             var password = document.getElementById('password').value;
 
-            var user = users.find(function(u) {
-                return u.username === username && u.password === password;
-            });
+            if (users.length === 0) {
+                showError('Les données ne sont pas encore chargées. Veuillez patienter.');
+                return;
+            }
+
+            var user = null;
+            for (var i = 0; i < users.length; i++) {
+                if (users[i].username === username && users[i].password === password) {
+                    user = users[i];
+                    break;
+                }
+            }
             
             if (user) {
                 currentUser = user;
@@ -426,23 +467,25 @@
             var container = document.getElementById('questionsContainer');
             container.innerHTML = '';
 
-            questions.forEach(function(q, index) {
+            for (var i = 0; i < questions.length; i++) {
+                var q = questions[i];
                 var questionDiv = document.createElement('div');
                 questionDiv.className = 'question-container';
-                if (index === 0) questionDiv.classList.add('active');
+                if (i === 0) questionDiv.classList.add('active');
 
-                var answersHtml = q.reponses.map(function(rep, repIndex) {
-                    return '<div class="answer-option" onclick="selectAnswer(' + q.id + ', ' + repIndex + ')">' +
+                var answersHtml = '';
+                for (var j = 0; j < q.reponses.length; j++) {
+                    answersHtml += '<div class="answer-option" onclick="selectAnswer(' + q.id + ', ' + j + ')">' +
                            '<div class="answer-radio"></div>' +
-                           '<span>' + rep.texte + '</span>' +
+                           '<span>' + q.reponses[j].texte + '</span>' +
                            '</div>';
-                }).join('');
+                }
 
-                var imageHtml = q.image ? '<img src="' + q.image + '" alt="Image question ' + (index + 1) + '" class="question-image" onerror="this.style.display=\'none\'">' : '';
+                var imageHtml = q.image ? '<img src="' + q.image + '" alt="Image question" class="question-image" onerror="this.style.display=\'none\'">' : '';
 
                 questionDiv.innerHTML = 
                     '<div class="question-header">' +
-                    '<div class="question-number">Question ' + (index + 1) + ' sur ' + questions.length + '</div>' +
+                    '<div class="question-number">Question ' + (i + 1) + ' sur ' + questions.length + '</div>' +
                     '<div class="question-text">' + q.question + '</div>' +
                     '</div>' +
                     imageHtml +
@@ -451,7 +494,7 @@
                     '</div>';
 
                 container.appendChild(questionDiv);
-            });
+            }
 
             updateProgress();
             updateNavigation();
@@ -463,13 +506,13 @@
             var answersDiv = document.getElementById('answers-' + questionId);
             var options = answersDiv.querySelectorAll('.answer-option');
             
-            options.forEach(function(opt, idx) {
-                if (idx === answerIndex) {
-                    opt.classList.add('selected');
+            for (var i = 0; i < options.length; i++) {
+                if (i === answerIndex) {
+                    options[i].classList.add('selected');
                 } else {
-                    opt.classList.remove('selected');
+                    options[i].classList.remove('selected');
                 }
-            });
+            }
         }
 
         document.getElementById('prevBtn').addEventListener('click', function() {
@@ -490,13 +533,13 @@
 
         function showQuestion(index) {
             var allQuestions = document.querySelectorAll('.question-container');
-            allQuestions.forEach(function(q, i) {
+            for (var i = 0; i < allQuestions.length; i++) {
                 if (i === index) {
-                    q.classList.add('active');
+                    allQuestions[i].classList.add('active');
                 } else {
-                    q.classList.remove('active');
+                    allQuestions[i].classList.remove('active');
                 }
-            });
+            }
             updateProgress();
             updateNavigation();
         }
@@ -524,26 +567,125 @@
 
         function submitQuiz() {
             var score = 0;
-            questions.forEach(function(q) {
+            var details = [];
+            
+            for (var i = 0; i < questions.length; i++) {
+                var q = questions[i];
                 var userAnswer = userAnswers[q.id];
-                if (userAnswer !== undefined && q.reponses[userAnswer].valeur === 1) {
+                var isCorrect = userAnswer !== undefined && q.reponses[userAnswer].valeur === 1;
+                
+                if (isCorrect) {
                     score++;
                 }
-            });
+                
+                details.push({
+                    question: q.question,
+                    userAnswer: userAnswer !== undefined ? q.reponses[userAnswer].texte : 'Non répondu',
+                    correctAnswer: getCorrectAnswer(q),
+                    isCorrect: isCorrect
+                });
+            }
 
             var percentage = (score / questions.length * 100).toFixed(1);
 
-            sendResultsByEmail(score, percentage);
-            displayResults(score, percentage);
+            generatePDFAndSendEmail(score, percentage, details);
         }
 
-        function sendResultsByEmail(score, percentage) {
-            console.log('Envoi des résultats par email à guarimm@gmail.com');
-            console.log('Élève: ' + currentUser.prenom + ' ' + currentUser.nom);
-            console.log('Score: ' + score + '/' + questions.length + ' (' + percentage + '%)');
+        function getCorrectAnswer(question) {
+            for (var i = 0; i < question.reponses.length; i++) {
+                if (question.reponses[i].valeur === 1) {
+                    return question.reponses[i].texte;
+                }
+            }
+            return '';
         }
 
-        function displayResults(score, percentage) {
+        function generatePDFAndSendEmail(score, percentage, details) {
+            showLoading(true);
+            
+            var jsPDF = window.jspdf.jsPDF;
+            var doc = new jsPDF();
+            
+            doc.setFontSize(20);
+            doc.text('Résultats du Quiz', 105, 20, { align: 'center' });
+            
+            doc.setFontSize(12);
+            doc.text('Élève: ' + currentUser.prenom + ' ' + currentUser.nom, 20, 40);
+            doc.text('Identifiant: ' + currentUser.username, 20, 50);
+            doc.text('Date: ' + new Date().toLocaleDateString('fr-FR'), 20, 60);
+            doc.text('Score: ' + score + '/' + questions.length + ' (' + percentage + '%)', 20, 70);
+            
+            doc.setFontSize(14);
+            doc.text('Détail des réponses:', 20, 85);
+            
+            var yPos = 95;
+            doc.setFontSize(10);
+            
+            for (var i = 0; i < details.length && i < 15; i++) {
+                var detail = details[i];
+                var status = detail.isCorrect ? '[CORRECT]' : '[INCORRECT]';
+                
+                doc.text((i + 1) + '. ' + status, 20, yPos);
+                yPos += 7;
+                
+                var questionText = detail.question.substring(0, 70);
+                doc.text('Q: ' + questionText, 25, yPos);
+                yPos += 7;
+                
+                doc.text('Votre réponse: ' + detail.userAnswer, 25, yPos);
+                yPos += 7;
+                
+                if (!detail.isCorrect) {
+                    doc.text('Réponse correcte: ' + detail.correctAnswer, 25, yPos);
+                    yPos += 7;
+                }
+                
+                yPos += 3;
+                
+                if (yPos > 270) {
+                    doc.addPage();
+                    yPos = 20;
+                }
+            }
+            
+            var pdfBlob = doc.output('blob');
+            
+            sendEmailWithPDF(pdfBlob, score, percentage, details);
+        }
+
+        function sendEmailWithPDF(pdfBlob, score, percentage, details) {
+            var formData = new FormData();
+            formData.append('pdf', pdfBlob, 'resultats_quiz_' + currentUser.username + '.pdf');
+            formData.append('studentName', currentUser.prenom + ' ' + currentUser.nom);
+            formData.append('username', currentUser.username);
+            formData.append('score', score);
+            formData.append('total', questions.length);
+            formData.append('percentage', percentage);
+            formData.append('email', 'guarimm@gmail.com');
+            
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', 'send_email.php', true);
+            
+            xhr.onload = function() {
+                showLoading(false);
+                if (xhr.status === 200) {
+                    displayResults(score, percentage, details);
+                } else {
+                    alert('Erreur lors de l\'envoi de l\'email. Affichage des résultats...');
+                    displayResults(score, percentage, details);
+                }
+            };
+            
+            xhr.onerror = function() {
+                showLoading(false);
+                alert('Erreur réseau. Veuillez vérifier que send_email.php est présent sur le serveur.');
+                displayResults(score, percentage, details);
+            };
+            
+            xhr.send(formData);
+        }
+
+        function displayResults(score, percentage, details) {
             document.getElementById('quizSection').classList.add('hidden');
             document.getElementById('resultsSection').classList.add('active');
 
@@ -553,30 +695,34 @@
             var reviewSection = document.getElementById('reviewSection');
             reviewSection.innerHTML = '<h3 style="margin-bottom: 20px; color: #333;">Révision des réponses</h3>';
 
-            questions.forEach(function(q) {
+            for (var i = 0; i < questions.length; i++) {
+                var q = questions[i];
                 var userAnswer = userAnswers[q.id];
-                var isCorrect = userAnswer !== undefined && q.reponses[userAnswer].valeur === 1;
 
                 var reviewDiv = document.createElement('div');
                 reviewDiv.className = 'review-question';
                 
-                var answersHtml = q.reponses.map(function(rep, repIndex) {
+                var answersHtml = '';
+                for (var j = 0; j < q.reponses.length; j++) {
                     var className = 'answer-option';
-                    if (rep.valeur === 1) className += ' correct';
-                    else if (userAnswer === repIndex) className += ' incorrect';
+                    if (q.reponses[j].valeur === 1) {
+                        className += ' correct';
+                    } else if (userAnswer === j) {
+                        className += ' incorrect';
+                    }
                     
-                    return '<div class="' + className + '">' +
+                    answersHtml += '<div class="' + className + '">' +
                            '<div class="answer-radio"></div>' +
-                           '<span>' + rep.texte + '</span>' +
+                           '<span>' + q.reponses[j].texte + '</span>' +
                            '</div>';
-                }).join('');
+                }
 
                 reviewDiv.innerHTML = 
                     '<div style="font-weight: 600; margin-bottom: 10px; color: #333;">' + q.question + '</div>' +
                     '<div class="answers">' + answersHtml + '</div>';
                 
                 reviewSection.appendChild(reviewDiv);
-            });
+            }
         }
 
         function getScoreMessage(percentage) {
@@ -586,6 +732,8 @@
             if (percentage >= 50) return 'Passable, il faut réviser';
             return 'Insuffisant, révisez le cours';
         }
+
+        initializeApp();
     </script>
 </body>
 </html>
