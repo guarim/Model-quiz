@@ -26,7 +26,7 @@
     "question": "Donner la nature du plan?",
     "reponses": [
       {"texte": "Plan de coupe", "valeur": 0},
-      {"texte": "Plan de masse", "valeur": ,
+      {"texte": "Plan de masse", "valeur": 0} ,
       {"texte": "Plan de Parcelle", "valeur": 1},
       {"texte": "Plan de situation", "valeur": 0}
     ],
