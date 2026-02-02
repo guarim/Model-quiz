@@ -1,45 +1,45 @@
 [
   {
     "id": 1,
-    "question": "Quelle est la capitale de la France ?",
+    "question":"Donner la nature du plan?"
     "reponses": [
-      {"texte": "Paris", "valeur": 1},
-      {"texte": "Lyon", "valeur": 0},
-      {"texte": "Marseille", "valeur": 0},
-      {"texte": "Bordeaux", "valeur": 0}
+      {"texte": "Plan de coupe", "valeur": 0},
+      {"texte": "Plan de masse", "valeur": ,
+      {"texte": "Plan de Parcelle", "valeur": 0},
+      {"texte": "Plan de situation", "valeur": 1}
     ],
     "image": "1.png"
   },
   {
     "id": 2,
-    "question": "Quel fleuve traverse Paris ?",
+    "question": "Quel est l'intérêt pour une entreprise d'avoir ce plan ?",
     "reponses": [
-      {"texte": "La Loire", "valeur": 0},
-      {"texte": "La Seine", "valeur": 1},
-      {"texte": "Le Rhône", "valeur": 0},
-      {"texte": "La Garonne", "valeur": 0}
+      {"texte": "Planifier ses vacances", "valeur": 0},
+      {"texte": "Localiser son fournisseur de matériaux", "valeur": 0},
+      {"texte": "Localiser la ville du chantier", "valeur": 1},
+      {"texte": "Lacaliser la parcelle dans le quartier", "valeur": 0}
     ],
     "image": "2.png"
   },
   {
     "id": 3,
-    "question": "Quelle est la plus haute montagne de France ?",
+    "question": "Donner la nature du plan?",
     "reponses": [
-      {"texte": "Le Mont Ventoux", "valeur": 0},
-      {"texte": "Le Puy de Dôme", "valeur": 0},
-      {"texte": "Le Mont Blanc", "valeur": 1},
-      {"texte": "Le Pic du Midi", "valeur": 0}
+      {"texte": "Plan de coupe", "valeur": 0},
+      {"texte": "Plan de masse", "valeur": ,
+      {"texte": "Plan de Parcelle", "valeur": 1},
+      {"texte": "Plan de situation", "valeur": 0}
     ],
     "image": "3.png"
   },
   {
     "id": 4,
-    "question": "Dans quelle région se trouve Strasbourg ?",
+    "question": "Quel est l'intérêt pour une entreprise d'avoir ce plan?",
     "reponses": [
-      {"texte": "Normandie", "valeur": 0},
-      {"texte": "Grand Est", "valeur": 1},
-      {"texte": "Bretagne", "valeur": 0},
-      {"texte": "Occitanie", "valeur": 0}
+        {"texte": "Planifier le trajet", "valeur": 0},
+      {"texte": "Localiser la parcelle dans le lotissement", "valeur": 1},
+      {"texte": "Localiser la ville du chantier", "valeur": 0},
+      {"texte": "Calculer la surface de la parcelle ", "valeur": 0}
     ],
     "image": "4.png"
   },
