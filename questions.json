@@ -1,7 +1,7 @@
 [
   {
     "id": 1,
-    "question": "Donner la nature (type) du plan ?"
+    "question": "Donner la nature (type) du plan ?",
     "reponses": [
       {"texte": "Plan de coupe", "valeur": 0},
       {"texte": "Plan de masse", "valeur": 0},
