@@ -36,7 +36,7 @@
     "id": 4,
     "question": "Quel est l'intérêt pour une entreprise d'avoir ce plan?",
     "reponses": [
-        {"texte": "Planifier le trajet", "valeur": 0},
+      {"texte": "Planifier le trajet", "valeur": 0},
       {"texte": "Localiser la parcelle dans le lotissement", "valeur": 1},
       {"texte": "Localiser la ville du chantier", "valeur": 0},
       {"texte": "Calculer la surface de la parcelle ", "valeur": 0}
